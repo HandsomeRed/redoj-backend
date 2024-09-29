@@ -1,18 +1,21 @@
-package com.yupi.redoj.model.entity;
+package com.yupi.redoj.model.vo;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
-import lombok.Data;
 
 /**
- * 题目
+ * 题目封装类
  * @TableName question
  */
 @TableName(value ="question")
 @Data
-public class Question implements Serializable {
+public class QuestionVO implements Serializable {
     /**
      * id
      */
@@ -35,11 +38,6 @@ public class Question implements Serializable {
     private String tags;
 
     /**
-     * 题目答案
-     */
-    private String answer;
-
-    /**
      * 题目提交数
      */
     private Integer submitNum;
@@ -48,11 +46,6 @@ public class Question implements Serializable {
      * 题目通过数
      */
     private Integer acceptedNum;
-
-    /**
-     * 判题用例（json 数组）
-     */
-    private String judgeCase;
 
     /**
      * 判题配置（json 对象）
@@ -87,9 +80,7 @@ public class Question implements Serializable {
     /**
      * 是否删除
      */
-    @TableLogic
     private Integer isDelete;
 
-    @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }
