@@ -34,9 +34,9 @@ public class QuestionAddRequest implements Serializable {
     private List<String> tags;
 
     /**
-     * 题目通过数
+     * 题目答案
      */
-    private Integer acceptedNum;
+    private String answer;
 
     /**
      * 判题用例

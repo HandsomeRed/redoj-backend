@@ -10,10 +10,7 @@ import com.yupi.redoj.common.ResultUtils;
 import com.yupi.redoj.constant.UserConstant;
 import com.yupi.redoj.exception.BusinessException;
 import com.yupi.redoj.exception.ThrowUtils;
-import com.yupi.redoj.model.dto.question.QuestionAddRequest;
-import com.yupi.redoj.model.dto.question.QuestionEditRequest;
-import com.yupi.redoj.model.dto.question.QuestionQueryRequest;
-import com.yupi.redoj.model.dto.question.QuestionUpdateRequest;
+import com.yupi.redoj.model.dto.question.*;
 import com.yupi.redoj.model.entity.Question;
 import com.yupi.redoj.model.entity.User;
 import com.yupi.redoj.model.vo.QuestionVO;
@@ -64,6 +61,15 @@ public class QuestionController {
         if (tags != null) {
             quest.setTags(JSONUtil.toJsonStr(tags));
         }
+        List<JudgeCase> judgeCase = questAddRequest.getJudgeCase();
+        if (judgeCase != null) {
+            quest.setJudgeCase(JSONUtil.toJsonStr(judgeCase));
+        }
+        List<JudgeConfig> judgeConfig = questAddRequest.getJudgeConfig();
+        if (judgeConfig != null) {
+            quest.setJudgeConfig(JSONUtil.toJsonStr(judgeConfig));
+        }
+
         questService.validQuestion(quest, true);
         User loginUser = userService.getLoginUser(request);
         quest.setUserId(loginUser.getId());
@@ -118,6 +124,14 @@ public class QuestionController {
         if (tags != null) {
             quest.setTags(JSONUtil.toJsonStr(tags));
         }
+        List<JudgeCase> judgeCase = questUpdateRequest.getJudgeCase();
+        if (judgeCase != null) {
+            quest.setJudgeCase(JSONUtil.toJsonStr(judgeCase));
+        }
+        List<JudgeConfig> judgeConfig = questUpdateRequest.getJudgeConfig();
+        if (judgeConfig != null) {
+            quest.setJudgeConfig(JSONUtil.toJsonStr(judgeConfig));
+        }
         // 参数校验
         questService.validQuestion(quest, false);
         long id = questUpdateRequest.getId();
@@ -129,7 +143,7 @@ public class QuestionController {
     }
 
     /**
-     * 根据 id 获取
+     * 根据 id 获取 (脱敏包装类)
      *
      * @param id
      * @return
@@ -139,11 +153,34 @@ public class QuestionController {
         if (id <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        Question quest = questService.getById(id);
-        if (quest == null) {
+        Question question = questService.getById(id);
+        if (question == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
-        return ResultUtils.success(questService.getQuestionVO(quest, request));
+        return ResultUtils.success(questService.getQuestionVO(question, request));
+    }
+
+    /**
+     * 根据 id 获取 (用户本人应该能获取到自己question全数据)
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping("/get")
+    public BaseResponse<Question> getQuestionById(long id, HttpServletRequest request) {
+        if (id <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Question question = questService.getById(id);
+        if (question == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+        User loginUser = userService.getLoginUser(request);
+        // 不是本人或者管理员
+         if (!question.getUserId().equals(loginUser.getId()) && !userService.isAdmin(loginUser)) {
+             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
+         }
+        return ResultUtils.success(question);
     }
 
     /**
@@ -225,6 +262,14 @@ public class QuestionController {
         List<String> tags = questEditRequest.getTags();
         if (tags != null) {
             quest.setTags(JSONUtil.toJsonStr(tags));
+        }
+        List<JudgeCase> judgeCase = questEditRequest.getJudgeCase();
+        if (judgeCase != null) {
+            quest.setJudgeCase(JSONUtil.toJsonStr(judgeCase));
+        }
+        List<JudgeConfig> judgeConfig = questEditRequest.getJudgeConfig();
+        if (judgeConfig != null) {
+            quest.setJudgeConfig(JSONUtil.toJsonStr(judgeConfig));
         }
         // 参数校验
         questService.validQuestion(quest, false);

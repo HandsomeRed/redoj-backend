@@ -35,7 +35,7 @@ public interface QuestionService extends IService<Question> {
 
 
     /**
-     * 获取帖子封装
+     * 获取題目封装
      *
      * @param question
      * @param request
@@ -44,7 +44,7 @@ public interface QuestionService extends IService<Question> {
     QuestionVO getQuestionVO(Question question, HttpServletRequest request);
 
     /**
-     * 分页获取帖子封装
+     * 分页获取題目封装
      *
      * @param questionPage
      * @param request
